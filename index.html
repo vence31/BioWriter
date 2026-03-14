@@ -7,26 +7,24 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
   :root { --pink: #e8889a; --purple: #c47ab8; --bg: #0d0d0f; --surface: #16161a; --border: #2a2a30; --text: #f0ede8; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; padding: 20px; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 20px; }
   .app { max-width: 650px; margin: 0 auto; }
   .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; background: linear-gradient(to right, #f5c6a0, var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; }
-  h3 { font-size: 1rem; margin-top: 0; color: #f5c6a0; }
-  textarea { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 12px; font-family: inherit; resize: none; box-sizing: border-box; }
-  .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; margin-top: 20px; }
+  h3 { font-size: 1rem; margin: 0 0 10px 0; color: #f5c6a0; }
+  textarea { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 12px; font-family: inherit; resize: none; box-sizing: border-box; min-height: 80px; }
+  .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; margin-top: 10px; }
   .btn:disabled { opacity: 0.3; }
   #resultArea { display: none; margin-top: 30px; padding: 20px; border: 1px solid var(--purple); border-radius: 15px; background: #111; }
-  #resultArea.visible { display: block; }
+  .visible { display: block !important; }
   .loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
-  .loader.visible { display: flex; }
 </style>
 </head>
 <body>
 
 <div class="app">
   <div class="logo">Ghostwriter</div>
-  
-  <div id="q-container">
+  <div id="questions">
     <div class="card"><h3>1. Your vibe in 3 words?</h3><textarea id="a-1" oninput="up()"></textarea></div>
     <div class="card"><h3>2. Niche geek-out topics?</h3><textarea id="a-2" oninput="up()"></textarea></div>
     <div class="card"><h3>3. Sensory happy place?</h3><textarea id="a-3" oninput="up()"></textarea></div>
@@ -42,7 +40,7 @@
   <button id="btn" class="btn" onclick="gen()" disabled>Answer 5 to start</button>
 
   <div id="resultArea">
-    <div id="bioText" contenteditable="true" style="white-space: pre-wrap; line-height: 1.6;"></div>
+    <div id="bioText" contenteditable="true" style="white-space: pre-wrap; line-height: 1.6; color: #fff;"></div>
     <button class="btn" onclick="copy()">Copy Bio</button>
   </div>
 </div>
@@ -50,12 +48,12 @@
 <div id="loader" class="loader">Architecting your narrative...</div>
 
 <script>
-const URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
-const Q_LABELS = ["Vibe","GeekOut","HappyPlace","Sunday","Roast","YoungerSelf","ValueProp","Vision","Qualities","NonNeg"];
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
+const LABELS = ["Vibe","GeekOut","HappyPlace","Sunday","Roast","YoungerSelf","ValueProp","Vision","Qualities","NonNeg"];
 
 function up() {
   let count = 0;
-  for(let i=1; i<=10; i++) if(document.getElementById('a-'+i).value.trim().length > 3) count++;
+  for(let i=1; i<=10; i++) if(document.getElementById('a-'+i).value.trim().length > 2) count++;
   document.getElementById('btn').disabled = count < 5;
   document.getElementById('btn').textContent = count >= 5 ? "Generate Bio ✦" : "Answer " + (5-count) + " more";
 }
@@ -64,22 +62,29 @@ async function gen() {
   const answers = [];
   for(let i=1; i<=10; i++) {
     const val = document.getElementById('a-'+i).value.trim();
-    if(val) answers.push({ id: i, question: Q_LABELS[i-1], answer: val });
+    if(val) answers.push({ id: i, question: LABELS[i-1], answer: val });
   }
 
-  document.getElementById('loader').classList.add('visible');
+  document.getElementById('loader').style.display = 'flex';
 
   try {
-    const response = await fetch(URL, { method: 'POST', body: JSON.stringify({ answers }) });
-    const text = await response.text(); // Get raw text first to debug
+    const resp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors', // Important for Google Apps Script redirects
+      body: JSON.stringify({ answers })
+    });
+
+    // Because 'no-cors' doesn't let us read the body, 
+    // we have to wait a moment and then check if the sheet updated or 
+    // use a different approach. But actually, for GAS, 
+    // let's use the standard fetch and handle the redirect.
     
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch(e) {
-      console.error("Raw response:", text);
-      throw new Error("The server sent an invalid response. Check Apps Script logs.");
-    }
+    const realResp = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ answers })
+    });
+
+    const data = await realResp.json();
 
     if (data.status === "success") {
       document.getElementById('bioText').textContent = data.bio;
@@ -88,9 +93,9 @@ async function gen() {
       throw new Error(data.message);
     }
   } catch (err) {
-    alert("Error: " + err.message);
+    alert("System Error: " + err.message + "\n\nNote: If the bio doesn't appear but your sheet updated, check Apps Script Deployment settings.");
   } finally {
-    document.getElementById('loader').classList.remove('visible');
+    document.getElementById('loader').style.display = 'none';
   }
 }
 
