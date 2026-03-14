@@ -19,60 +19,24 @@
   --border:  #2a2a30;
   --text:    #f0ede8;
   --muted:   #888;
-  --hint:    #3a3a44;
 }
 
 html, body {
   background: var(--bg);
   color: var(--text);
-  font-family: 'DM Sans', system-ui, sans-serif;
+  font-family: 'DM Sans', sans-serif;
   min-height: 100vh;
-  scroll-behavior: smooth;
+  line-height: 1.6;
 }
 
 .app { max-width: 720px; margin: 0 auto; padding: 2rem 1.2rem 6rem; }
 
-.header { text-align: center; margin-bottom: 3rem; padding-top: 1rem; }
+.header { text-align: center; margin-bottom: 3rem; }
 .logo { 
-  font-family: 'Playfair Display', serif; 
-  font-size: 2.8rem; 
-  font-weight: 700; 
-  background: linear-gradient(135deg, var(--peach) 0%, var(--pink) 50%, var(--purple) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.4rem;
+  font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 700; 
+  background: linear-gradient(135deg, var(--peach), var(--pink), var(--purple));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
-.tagline { font-size: 0.82rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; font-weight: 400; }
-
-.intro-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 1.8rem;
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
-}
-.intro-card h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.8rem; color: var(--peach); }
-.intro-card p { font-size: 0.92rem; color: #ccc; margin-bottom: 1rem; }
-
-.progress-container {
-  position: sticky;
-  top: 1rem;
-  z-index: 100;
-  background: rgba(13, 13, 15, 0.9);
-  backdrop-filter: blur(10px);
-  padding: 1rem;
-  border-radius: 16px;
-  border: 1px solid var(--border);
-  margin-bottom: 2.5rem;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.progress-bar-bg { flex-grow: 1; height: 6px; background: var(--surface2); border-radius: 10px; overflow: hidden; }
-#progressFill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--pink), var(--purple)); transition: width 0.4s ease; }
-.progress-stats { font-size: 0.75rem; font-weight: 600; color: var(--muted); white-space: nowrap; }
 
 .question-card {
   background: var(--surface);
@@ -80,76 +44,37 @@ html, body {
   border-radius: 20px;
   padding: 1.8rem;
   margin-bottom: 1.5rem;
-  transition: transform 0.2s, border-color 0.2s;
 }
-.question-card:focus-within { border-color: var(--pink); transform: translateY(-2px); }
-.question-card.has-answer { border-color: #343440; }
-.question-num { font-size: 0.7rem; color: var(--purple); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.8rem; display: block; }
-.question-text { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 600; line-height: 1.35; margin-bottom: 0.6rem; color: #f5f0ea; }
-.question-hint { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.2rem; line-height: 1.5; }
+
+.question-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--peach); }
 
 textarea {
-  width: 100%;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1rem;
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.95rem;
-  resize: vertical;
-  min-height: 100px;
-  transition: all 0.2s;
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 1rem; color: var(--text); font-family: inherit;
+  font-size: 1rem; min-height: 100px; resize: none;
 }
-textarea:focus { outline: none; border-color: var(--pink); background: #22222a; }
 
-.char-count { font-size: 0.7rem; color: var(--hint); text-align: right; margin-top: 0.5rem; }
-
-.actions { margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; }
 .btn-primary {
-  background: linear-gradient(135deg, var(--pink) 0%, var(--purple) 100%);
-  color: white;
-  border: none;
-  padding: 1.2rem;
-  border-radius: 14px;
-  font-size: 1.05rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
+  width: 100%; background: linear-gradient(135deg, var(--pink), var(--purple));
+  color: white; border: none; padding: 1.2rem; border-radius: 14px;
+  font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 1rem;
 }
-.btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(232, 136, 154, 0.3); }
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
 
-.btn-secondary { background: transparent; color: var(--muted); border: 1px solid var(--border); padding: 0.8rem; border-radius: 12px; cursor: pointer; font-size: 0.85rem; }
+.btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
 
 #resultArea {
-  display: none;
-  margin-top: 3rem;
-  padding: 2rem;
-  background: #111118;
-  border: 1px solid var(--purple);
-  border-radius: 24px;
+  display: none; margin-top: 3rem; padding: 2rem;
+  background: #111118; border: 1px solid var(--purple); border-radius: 24px;
 }
-#resultArea.visible { display: block; animation: fadeIn 0.8s ease forwards; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+#resultArea.visible { display: block; }
 
-#bioText { font-size: 1.1rem; line-height: 1.7; white-space: pre-wrap; color: var(--text); margin-bottom: 2rem; outline: none; }
-.btn-copy { width: 100%; background: var(--surface2); color: white; border: 1px solid var(--border); padding: 1rem; border-radius: 12px; cursor: pointer; font-weight: 600; transition: 0.2s; }
-.btn-copy.copied { background: var(--pink); border-color: var(--pink); }
+#bioText { font-size: 1.1rem; white-space: pre-wrap; margin-bottom: 2rem; }
 
-.loading-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(13, 13, 15, 0.95);
-  z-index: 1000;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+.loader {
+  display: none; position: fixed; inset: 0; background: rgba(13,13,15,0.95);
+  z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
 }
-.loading-overlay.visible { display: flex; }
-.spinner { width: 40px; height: 40px; border: 3px solid rgba(232, 136, 154, 0.2); border-top-color: var(--pink); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.loader.visible { display: flex; }
 </style>
 </head>
 <body>
@@ -157,176 +82,85 @@ textarea:focus { outline: none; border-color: var(--pink); background: #22222a; 
 <div class="app">
   <header class="header">
     <div class="logo">Ghostwriter</div>
-    <p class="tagline">AI Dating Profile Studio</p>
+    <p style="color:var(--muted)">Server-Side Secure Version</p>
   </header>
 
-  <div class="intro-card">
-    <h2>Stop swiping, start being seen.</h2>
-    <p>Answer at least 5 questions. Be specific about your sensory details and personal stories—it helps the AI capture your true voice.</p>
-  </div>
-
-  <div class="progress-container">
-    <div class="progress-stats"><span id="doneCount">0</span> / 10</div>
-    <div class="progress-bar-bg"><div id="progressFill"></div></div>
-    <div class="progress-stats" id="progressPercent">0%</div>
-  </div>
-
   <div id="questions">
-    <div class="question-card" id="qc-1">
-      <span class="question-num">01 — The Essence</span>
-      <h3 class="question-text">If you had to describe your vibe in just three words, what would they be?</h3>
-      <textarea id="a-1" placeholder="e.g. Grounded, curious, slightly chaotic-good..." oninput="handleInput(1)"></textarea>
-      <div class="char-count"><span id="cc-1">0</span> / 80</div>
+    <div class="question-card">
+      <h3 class="question-text">1. Describe your vibe in three words.</h3>
+      <textarea id="a-1" placeholder="e.g. Stoic, ambitious, coffee-obsessed" oninput="checkProgress()"></textarea>
     </div>
-
-    <div class="question-card" id="qc-2">
-      <span class="question-num">02 — The Geek-Out</span>
-      <h3 class="question-text">What are three niche topics you could talk about for hours?</h3>
-      <textarea id="a-2" placeholder="The more specific the better..." oninput="handleInput(2)"></textarea>
-      <div class="char-count"><span id="cc-2">0</span> / 300</div>
+    <div class="question-card">
+      <h3 class="question-text">2. What are your niche geek-out topics?</h3>
+      <textarea id="a-2" placeholder="Watches, space, history..." oninput="checkProgress()"></textarea>
     </div>
-
-    <div class="question-card" id="qc-3">
-      <span class="question-num">03 — The Micro-Story</span>
-      <h3 class="question-text">Describe a "happy place" moment using sensory details.</h3>
-      <textarea id="a-3" placeholder="What do you smell, hear, and feel?..." oninput="handleInput(3)"></textarea>
-      <div class="char-count"><span id="cc-3">0</span> / 400</div>
+    <div class="question-card">
+      <h3 class="question-text">3. Describe your sensory 'happy place'.</h3>
+      <textarea id="a-3" placeholder="Rain on the roof, smell of old books..." oninput="checkProgress()"></textarea>
     </div>
-
-    <div class="question-card" id="qc-4">
-      <span class="question-num">04 — The Typical Sunday</span>
-      <h3 class="question-text">How would you spend a random Sunday if money/work didn't exist?</h3>
-      <textarea id="a-4" placeholder="From morning to night..." oninput="handleInput(4)"></textarea>
-      <div class="char-count"><span id="cc-4">0</span> / 400</div>
+    <div class="question-card">
+      <h3 class="question-text">4. How do you spend a perfect Sunday?</h3>
+      <textarea id="a-4" oninput="checkProgress()"></textarea>
     </div>
-
-    <div class="question-card" id="qc-5">
-      <span class="question-num">05 — The Roast Story</span>
-      <h3 class="question-text">What's a specific story your friends tell to roast you?</h3>
-      <textarea id="a-5" placeholder="Self-awareness is attractive..." oninput="handleInput(5)"></textarea>
-      <div class="char-count"><span id="cc-5">0</span> / 400</div>
-    </div>
-
-    <div class="question-card" id="qc-6">
-      <span class="question-num">06 — The Younger Self</span>
-      <h3 class="question-text">What would your younger self be most proud of in your life today?</h3>
-      <textarea id="a-6" placeholder="A reflection of your growth..." oninput="handleInput(6)"></textarea>
-      <div class="char-count"><span id="cc-6">0</span> / 350</div>
-    </div>
-
-    <div class="question-card" id="qc-7">
-      <span class="question-num">07 — The Value Proposition</span>
-      <h3 class="question-text">What's the specific "win" someone gets by dating you?</h3>
-      <textarea id="a-7" placeholder="e.g. Always finding the hidden-gem cafe..." oninput="handleInput(7)"></textarea>
-      <div class="char-count"><span id="cc-7">0</span> / 300</div>
-    </div>
-
-    <div class="question-card" id="qc-8">
-      <span class="question-num">08 — The Vision</span>
-      <h3 class="question-text">What is your honest vision for a relationship in 3–5 years?</h3>
-      <textarea id="a-8" placeholder="Clarity is a green flag..." oninput="handleInput(8)"></textarea>
-      <div class="char-count"><span id="cc-8">0</span> / 300</div>
-    </div>
-
-    <div class="question-card" id="qc-9">
-      <span class="question-num">09 — The Ideal Partner</span>
-      <h3 class="question-text">Three qualities in a partner that matter more to you than "stats."</h3>
-      <textarea id="a-9" placeholder="Go deeper than 'kind'..." oninput="handleInput(9)"></textarea>
-      <div class="char-count"><span id="cc-9">0</span> / 350</div>
-    </div>
-
-    <div class="question-card" id="qc-10">
-      <span class="question-num">10 — The Deal-Breaker</span>
-      <h3 class="question-text">What's your one non-negotiable?</h3>
-      <textarea id="a-10" placeholder="Frame it as a hope for the future..." oninput="handleInput(10)"></textarea>
-      <div class="char-count"><span id="cc-10">0</span> / 350</div>
+    <div class="question-card">
+      <h3 class="question-text">5. What's a story your friends roast you for?</h3>
+      <textarea id="a-5" oninput="checkProgress()"></textarea>
     </div>
   </div>
 
-  <div class="actions">
-    <button id="generateBtn" class="btn-primary" onclick="generateBio()" disabled>Answer 5 questions to generate</button>
-    <button class="btn-secondary" onclick="clearAll()">Start Over</button>
-  </div>
+  <button id="genBtn" class="btn-primary" onclick="generate()" disabled>Answer 5 to Generate</button>
 
   <div id="resultArea">
-    <span style="font-size: 0.75rem; color: var(--purple); font-weight: 700; text-transform: uppercase;">Your Ghostwritten Profile</span>
     <div id="bioText" contenteditable="true"></div>
-    <button id="copyBtn" class="btn-copy" onclick="copyBio()">Copy to Clipboard</button>
+    <button class="btn-primary" onclick="copyBio()">Copy Bio</button>
   </div>
 </div>
 
-<div id="loader" class="loading-overlay">
-  <div class="spinner"></div>
-  <p style="color:var(--pink); font-size: 0.9rem;">Architecting your narrative...</p>
-</div>
+<div id="loader" class="loader"><p>Architecting your narrative...</p></div>
 
 <script>
-// --- CONFIGURATION ---
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
 
-const answered = new Set();
-const QUESTIONS = [
-  "Vibe", "Geek-Out", "Happy Place", "Sunday", "Roast", 
-  "Younger Self", "Value Prop", "Vision", "Partner Qualities", "Deal-breaker"
-];
+const QUESTIONS = ["Vibe", "Geek-Out", "Happy Place", "Sunday", "Roast"];
 
-function handleInput(id) {
-  const val = document.getElementById('a-' + id).value.trim();
-  document.getElementById('cc-' + id).textContent = val.length;
-  if (val.length >= 3) {
-    answered.add(id);
-    document.getElementById('qc-' + id).classList.add('has-answer');
-  } else {
-    answered.delete(id);
-    document.getElementById('qc-' + id).classList.remove('has-answer');
+function checkProgress() {
+  let count = 0;
+  for(let i=1; i<=5; i++) {
+    if(document.getElementById('a-'+i).value.trim().length > 3) count++;
   }
-  updateProgress();
+  document.getElementById('genBtn').disabled = count < 5;
+  document.getElementById('genBtn').textContent = count < 5 ? `Answer ${5-count} more` : "Generate Bio ✦";
 }
 
-function updateProgress() {
-  const count = answered.size;
-  document.getElementById('doneCount').textContent = count;
-  document.getElementById('progressFill').style.width = (count * 10) + '%';
-  document.getElementById('progressPercent').textContent = (count * 10) + '%';
-  document.getElementById('generateBtn').disabled = count < 5;
-  if (count < 5) {
-    document.getElementById('generateBtn').textContent = `Answer ${5 - count} more to generate`;
-  } else {
-    document.getElementById('generateBtn').textContent = 'Generate my profile ✦';
-  }
-}
-
-async function generateBio() {
+async function generate() {
   const answers = [];
-  for (let i = 1; i <= 10; i++) {
-    const val = document.getElementById('a-' + i).value.trim();
-    if (val.length >= 3) answers.push({ question: QUESTIONS[i-1], answer: val });
+  for(let i=1; i<=5; i++) {
+    answers.push({ 
+      question: QUESTIONS[i-1], 
+      answer: document.getElementById('a-'+i).value.trim() 
+    });
   }
 
   document.getElementById('loader').classList.add('visible');
-  
+
   try {
     const response = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({ answers })
     });
 
-    if (!response.ok) throw new Error("Failed to connect to the server.");
+    const data = await response.json();
 
-    const result = await response.json();
-    
-    // Check if the script returned an error status
-    if (result.status === "error" || result.error) {
-        throw new Error(result.error || "The AI encountered an error.");
+    if (data.status === "success") {
+      document.getElementById('bioText').textContent = data.bio;
+      document.getElementById('resultArea').classList.add('visible');
+      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    } else {
+      throw new Error(data.message);
     }
 
-    document.getElementById('bioText').textContent = result.bio;
-    document.getElementById('resultArea').classList.add('visible');
-    document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
-    
   } catch (err) {
-    console.error(err);
-    alert("Ghostwriter Error: " + err.message);
+    alert("System Error: " + err.message);
   } finally {
     document.getElementById('loader').classList.remove('visible');
   }
@@ -334,17 +168,8 @@ async function generateBio() {
 
 function copyBio() {
   const text = document.getElementById('bioText').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copyBtn');
-    btn.textContent = 'Copied!';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copy to Clipboard'; btn.classList.remove('copied'); }, 2000);
-  });
-}
-
-function clearAll() {
-  if(!confirm("Clear everything?")) return;
-  location.reload();
+  navigator.clipboard.writeText(text);
+  alert("Copied!");
 }
 </script>
 
