@@ -1,50 +1,183 @@
-async function gen() {
-  const answers = [];
-  for(let i=1; i<=10; i++) {
-    const val = document.getElementById('a-'+i).value.trim();
-    if(val) answers.push({ id: i, question: LABELS[i-1], answer: val });
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ghostwriter AI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
+  :root { --pink: #e8889a; --purple: #c47ab8; --bg: #0d0d0f; --surface: #16161a; --border: #2a2a30; --text: #f0ede8; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 20px; }
+  .app { max-width: 650px; margin: 0 auto; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; background: linear-gradient(to right, #f5c6a0, var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+  h3 { font-size: 0.9rem; margin-bottom: 10px; color: #f5c6a0; text-transform: uppercase; letter-spacing: 1px; }
+  textarea { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 12px; font-family: inherit; resize: none; box-sizing: border-box; min-height: 80px; }
+  .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; font-size: 1rem; margin-top: 10px; }
+  .btn:disabled { opacity: 0.2; cursor: not-allowed; }
+  #resultArea { display: none; margin-top: 30px; padding: 25px; border: 1px solid var(--purple); border-radius: 15px; background: #111; }
+  .loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--pink); }
+</style>
+</head>
+<body>
 
+<div class="app">
+  <div class="logo">Ghostwriter</div>
+
+  <div id="questions">
+
+    <div class="card">
+      <h3>1. The Essence</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">If you had to describe your vibe in just three words, what would they be? Not what you aspire to be — what your people would actually say.</p>
+      <textarea id="a-1" oninput="up()" placeholder="e.g. Curious, grounded, chaotic-good"></textarea>
+    </div>
+
+    <div class="card">
+      <h3>2. The Geek-Out</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">What are three niche topics or hobbies you could talk about for hours? The more specific the better — not "music," try "90s Memphis rap."</p>
+      <textarea id="a-2" oninput="up()" placeholder="e.g. Sourdough fermentation science, vintage NBA footage, brutalist architecture"></textarea>
+    </div>
+
+    <div class="card">
+      <h3>3. The Micro-Story</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">Describe a perfect moment or your "happy place" using sensory details. What does it smell like? Sound like? Feel like?</p>
+      <textarea id="a-3" oninput="up()" placeholder="e.g. Sunday mornings in my kitchen — cast iron on the stove, Coltrane low on the speaker, nowhere to be until noon."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>4. The Typical Sunday</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">If money and work were irrelevant, how would you spend a random Sunday from morning to night? Be honest, not aspirational.</p>
+      <textarea id="a-4" oninput="up()" placeholder="e.g. Slow start, long breakfast I actually cooked, a drive with no destination, dinner with people I love."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>5. The Roast Story</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">What's a specific, funny story your friends tell to roast you? The one that comes up at every dinner. Self-awareness is attractive.</p>
+      <textarea id="a-5" oninput="up()" placeholder="e.g. I once drove 45 minutes to a restaurant, looked at the menu, and left. My friends have not let it go."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>6. The Younger Self</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">What would your younger self be most surprised — or proud — to see in your life today? Even small things reveal a lot.</p>
+      <textarea id="a-6" oninput="up()" placeholder="e.g. That I actually learned to cook. That I stopped saying yes to everything."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>7. The Value Proposition</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">What's the specific "win" someone gets by dating you? Not personality traits — concrete things. "I always find the best restaurant nobody's heard of yet."</p>
+      <textarea id="a-7" oninput="up()" placeholder="e.g. You'll never have a bad meal — I research restaurants like it's a second job."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>8. The Vision</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">What is your honest vision for a relationship in the next 3–5 years? Clarity is a green flag. Be direct.</p>
+      <textarea id="a-8" oninput="up()" placeholder="e.g. I want to build something real — someone I'm genuinely excited to come home to. Marriage is on the table."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>9. The Ideal Partner</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">Describe three qualities in a partner that matter more to you than height, job, or any other "stat." Go deeper than "kind" or "funny."</p>
+      <textarea id="a-9" oninput="up()" placeholder="e.g. Genuinely curious about people. Knows how to disagree without a fight. Has one thing they care about deeply."></textarea>
+    </div>
+
+    <div class="card">
+      <h3>10. The Deal-Breaker</h3>
+      <p style="font-size:0.82rem;color:#888;margin-bottom:10px;">What's your one non-negotiable — framed as a hope for your future, not a warning. "I need someone who wants a real family someday" lands better than "don't message me if you're not serious."</p>
+      <textarea id="a-10" oninput="up()" placeholder="e.g. I'm looking for someone who wants to be chosen every day — not just at the beginning."></textarea>
+    </div>
+
+  </div>
+
+  <button id="btn" class="btn" onclick="gen()" disabled>Answer 5 to start</button>
+
+  <div id="resultArea">
+    <div id="bioText" contenteditable="true" style="white-space: pre-wrap; line-height: 1.8; color: #fff; font-size: 1.1rem;"></div>
+    <button class="btn" onclick="copyBio()" style="margin-top:20px;">Copy Bio</button>
+  </div>
+</div>
+
+<div id="loader" class="loader">Architecting your narrative...</div>
+
+<script>
+// ── CONFIG — no API key here, it lives securely in Apps Script only ──
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
+const LABELS = [
+  "Their essence / vibe in 3 words",
+  "Niche topics or hobbies they geek out on",
+  "A perfect moment or happy place (sensory details)",
+  "How they spend a standard Sunday (money/work irrelevant)",
+  "A funny story friends use to roast them",
+  "What their younger self would be most surprised or proud to see",
+  "The specific win a partner gets by dating them (Value Proposition)",
+  "Their explicit relationship vision for the next 3-5 years",
+  "Three qualities they value in a partner more than stats",
+  "Their one non-negotiable deal-breaker, framed as a hope"
+];
+
+function up() {
+  let count = 0;
+  for (let i = 1; i <= 10; i++) {
+    if (document.getElementById('a-' + i).value.trim().length > 3) count++;
+  }
+  const btn = document.getElementById('btn');
+  btn.disabled = count < 5;
+  btn.textContent = count >= 5 ? 'Generate Bio ✦' : `Answer ${5 - count} more...`;
+}
+
+function collectAnswers() {
+  const answers = [];
+  for (let i = 1; i <= 10; i++) {
+    const val = document.getElementById('a-' + i).value.trim();
+    if (val) answers.push({ id: i, question: LABELS[i - 1], answer: val });
+  }
+  return answers;
+}
+
+// Apps Script handles the sheet save AND the Gemini call.
+// No API key needed in this file at all.
+async function gen() {
+  const answers = collectAnswers();
   document.getElementById('loader').style.display = 'flex';
 
   try {
-    // Single fetch with no-cors — Apps Script handles everything server-side
-    await fetch(SCRIPT_URL, {
+    // Note: no Content-Type header — setting application/json triggers a CORS
+    // preflight that Apps Script blocks. Omitting it sends a simple request
+    // that GAS handles fine and returns the bio as JSON.
+    const response = await fetch(SCRIPT_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ answers })
     });
 
-    // Since no-cors blocks the response, poll the sheet for the bio
-    // Instead, pass answers to Gemini directly from the browser
-    const bio = await callGeminiDirect(answers);
-    document.getElementById('bioText').textContent = bio;
-    document.getElementById('resultArea').classList.add('visible');
+    const data = await response.json();
 
+    if (data.status === 'success') {
+      document.getElementById('bioText').textContent = data.bio;
+      document.getElementById('resultArea').style.display = 'block';
+      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    } else {
+      throw new Error(data.message || 'Apps Script returned an error');
+    }
   } catch (err) {
-    alert("Error: " + err.message);
+    alert('Error: ' + err.message);
   } finally {
     document.getElementById('loader').style.display = 'none';
   }
 }
 
-async function callGeminiDirect(answers) {
-  const GEMINI_KEY = 'AIzaSyCT3CQnq0NZbSaXO8vROHoILKGmnt0GC_I';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
-  const context = answers.map(a => `${a.question}: ${a.answer}`).join('\n');
-
-  const resp = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: "You are an expert dating coach. Write a compelling dating profile bio based on these answers. Use first person. Be specific, avoid clichés.\n\n" + context }] }]
-    })
+function copyBio() {
+  const text = document.getElementById('bioText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copied to clipboard!');
+  }).catch(() => {
+    const el = document.getElementById('bioText');
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    alert('Copied!');
   });
-
-  const data = await resp.json();
-  if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-    return data.candidates[0].content.parts[0].text.trim();
-  }
-  throw new Error(JSON.stringify(data));
 }
+</script>
+</body>
+</html>
