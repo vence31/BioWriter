@@ -3,157 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ghostwriter — AI Dating Profile Studio</title>
+<title>Ghostwriter AI</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root { --pink: #e8889a; --peach: #f5c6a0; --purple: #c47ab8; --bg: #0d0d0f; --surface: #16161a; --surface2: #1c1c22; --border: #2a2a30; --text: #f0ede8; --muted: #888; }
-  html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; scroll-behavior: smooth; }
-  .app { max-width: 720px; margin: 0 auto; padding: 2rem 1.2rem 6rem; }
-  .header { text-align: center; margin-bottom: 3rem; }
-  .logo { font-family: 'Playfair Display', serif; font-size: 2.8rem; font-weight: 700; background: linear-gradient(135deg, var(--peach), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .progress-bar { position: sticky; top: 1rem; background: var(--surface); border: 1px solid var(--border); padding: 1rem; border-radius: 15px; z-index: 10; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px; }
-  .bar-bg { flex-grow: 1; height: 8px; background: var(--surface2); border-radius: 10px; overflow: hidden; }
-  #fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--pink), var(--purple)); transition: 0.3s; }
-  .question-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 1.8rem; margin-bottom: 1.5rem; transition: 0.3s; }
-  .question-card.active { border-color: var(--pink); }
-  .question-text { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: 1rem; color: var(--peach); }
-  textarea { width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; color: var(--text); font-family: inherit; min-height: 100px; resize: none; }
-  .btn-primary { width: 100%; background: linear-gradient(135deg, var(--pink), var(--purple)); color: white; border: none; padding: 1.2rem; border-radius: 14px; font-weight: 600; cursor: pointer; }
-  .btn-primary:disabled { opacity: 0.3; cursor: not-allowed; }
-  #resultArea { display: none; margin-top: 2rem; padding: 2rem; border: 1px solid var(--purple); border-radius: 20px; background: #111118; }
-  #resultArea.visible { display: block; animation: slideUp 0.5s ease; }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-  .loader { display: none; position: fixed; inset: 0; background: rgba(13,13,15,0.95); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
+  :root { --pink: #e8889a; --purple: #c47ab8; --bg: #0d0d0f; --surface: #16161a; --border: #2a2a30; --text: #f0ede8; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; margin: 0; padding: 20px; }
+  .app { max-width: 650px; margin: 0 auto; }
+  .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; background: linear-gradient(to right, #f5c6a0, var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; }
+  h3 { font-size: 1rem; margin-top: 0; color: #f5c6a0; }
+  textarea { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 12px; font-family: inherit; resize: none; box-sizing: border-box; }
+  .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; margin-top: 20px; }
+  .btn:disabled { opacity: 0.3; }
+  #resultArea { display: none; margin-top: 30px; padding: 20px; border: 1px solid var(--purple); border-radius: 15px; background: #111; }
+  #resultArea.visible { display: block; }
+  .loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100; flex-direction: column; align-items: center; justify-content: center; }
   .loader.visible { display: flex; }
 </style>
 </head>
 <body>
 
 <div class="app">
-  <div class="header">
-    <div class="logo">Ghostwriter</div>
-    <p style="color:var(--muted)">10 Questions | Min 5 Required</p>
+  <div class="logo">Ghostwriter</div>
+  
+  <div id="q-container">
+    <div class="card"><h3>1. Your vibe in 3 words?</h3><textarea id="a-1" oninput="up()"></textarea></div>
+    <div class="card"><h3>2. Niche geek-out topics?</h3><textarea id="a-2" oninput="up()"></textarea></div>
+    <div class="card"><h3>3. Sensory happy place?</h3><textarea id="a-3" oninput="up()"></textarea></div>
+    <div class="card"><h3>4. Perfect Sunday?</h3><textarea id="a-4" oninput="up()"></textarea></div>
+    <div class="card"><h3>5. A story your friends roast you for?</h3><textarea id="a-5" oninput="up()"></textarea></div>
+    <div class="card"><h3>6. What would your younger self be proud of?</h3><textarea id="a-6" oninput="up()"></textarea></div>
+    <div class="card"><h3>7. The 'win' of dating you?</h3><textarea id="a-7" oninput="up()"></textarea></div>
+    <div class="card"><h3>8. 5-year vision?</h3><textarea id="a-8" oninput="up()"></textarea></div>
+    <div class="card"><h3>9. Top 3 partner qualities?</h3><textarea id="a-9" oninput="up()"></textarea></div>
+    <div class="card"><h3>10. Non-negotiable?</h3><textarea id="a-10" oninput="up()"></textarea></div>
   </div>
 
-  <div class="progress-bar">
-    <span id="countText">0/10</span>
-    <div class="bar-bg"><div id="fill"></div></div>
-  </div>
-
-  <div id="questions">
-    <div class="question-card">
-      <h3 class="question-text">1. Describe your vibe in three words.</h3>
-      <textarea id="a-1" placeholder="e.g. Grounded, ambitious, curious" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">2. What are three niche geek-out topics?</h3>
-      <textarea id="a-2" placeholder="Watches, space, cooking..." oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">3. Describe a sensory 'happy place' moment.</h3>
-      <textarea id="a-3" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">4. Your typical perfect Sunday?</h3>
-      <textarea id="a-4" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">5. A story your friends roast you for?</h3>
-      <textarea id="a-5" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">6. What would your younger self be proud of?</h3>
-      <textarea id="a-6" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">7. What is the 'win' someone gets by dating you?</h3>
-      <textarea id="a-7" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">8. Vision for a relationship in 3-5 years?</h3>
-      <textarea id="a-8" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">9. Three partner qualities that matter most?</h3>
-      <textarea id="a-9" oninput="updateUI()"></textarea>
-    </div>
-    <div class="question-card">
-      <h3 class="question-text">10. Your one non-negotiable?</h3>
-      <textarea id="a-10" oninput="updateUI()"></textarea>
-    </div>
-  </div>
-
-  <button id="genBtn" class="btn-primary" onclick="generate()" disabled>Answer 5 to Unlock</button>
+  <button id="btn" class="btn" onclick="gen()" disabled>Answer 5 to start</button>
 
   <div id="resultArea">
-    <div id="bioText" contenteditable="true" style="line-height:1.7; font-size:1.1rem; margin-bottom:20px;"></div>
-    <button class="btn-primary" onclick="copyBio()">Copy to Clipboard</button>
+    <div id="bioText" contenteditable="true" style="white-space: pre-wrap; line-height: 1.6;"></div>
+    <button class="btn" onclick="copy()">Copy Bio</button>
   </div>
 </div>
 
-<div id="loader" class="loader"><p style="color:var(--pink)">Architecting your narrative...</p></div>
+<div id="loader" class="loader">Architecting your narrative...</div>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
+const URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
+const Q_LABELS = ["Vibe","GeekOut","HappyPlace","Sunday","Roast","YoungerSelf","ValueProp","Vision","Qualities","NonNeg"];
 
-const QUESTIONS = [
-  "Vibe", "Geek-Out", "Happy Place", "Sunday", "Roast", 
-  "Younger Self", "Value Prop", "Vision", "Partner Qualities", "Deal-breaker"
-];
-
-function updateUI() {
+function up() {
   let count = 0;
-  for(let i=1; i<=10; i++) {
-    if(document.getElementById('a-'+i).value.trim().length > 3) count++;
-  }
-  document.getElementById('countText').textContent = count + "/10";
-  document.getElementById('fill').style.width = (count * 10) + "%";
-  
-  const btn = document.getElementById('genBtn');
-  if(count >= 5) {
-    btn.disabled = false;
-    btn.textContent = "Generate Bio ✦";
-  } else {
-    btn.disabled = true;
-    btn.textContent = `Answer ${5-count} more to unlock`;
-  }
+  for(let i=1; i<=10; i++) if(document.getElementById('a-'+i).value.trim().length > 3) count++;
+  document.getElementById('btn').disabled = count < 5;
+  document.getElementById('btn').textContent = count >= 5 ? "Generate Bio ✦" : "Answer " + (5-count) + " more";
 }
 
-async function generate() {
+async function gen() {
   const answers = [];
   for(let i=1; i<=10; i++) {
     const val = document.getElementById('a-'+i).value.trim();
-    if(val) answers.push({ id: i, question: QUESTIONS[i-1], answer: val });
+    if(val) answers.push({ id: i, question: Q_LABELS[i-1], answer: val });
   }
 
   document.getElementById('loader').classList.add('visible');
 
   try {
-    const response = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ answers })
-    });
-
-    const data = await response.json();
+    const response = await fetch(URL, { method: 'POST', body: JSON.stringify({ answers }) });
+    const text = await response.text(); // Get raw text first to debug
+    
+    let data;
+    try {
+      data = JSON.parse(text);
+    } catch(e) {
+      console.error("Raw response:", text);
+      throw new Error("The server sent an invalid response. Check Apps Script logs.");
+    }
 
     if (data.status === "success") {
       document.getElementById('bioText').textContent = data.bio;
       document.getElementById('resultArea').classList.add('visible');
-      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
     } else {
-      throw new Error(data.message || "Unknown error");
+      throw new Error(data.message);
     }
   } catch (err) {
-    alert("System Error: " + err.message);
+    alert("Error: " + err.message);
   } finally {
     document.getElementById('loader').classList.remove('visible');
   }
 }
 
-function copyBio() {
-  const text = document.getElementById('bioText').textContent;
-  navigator.clipboard.writeText(text);
+function copy() {
+  navigator.clipboard.writeText(document.getElementById('bioText').textContent);
   alert("Copied!");
 }
 </script>
