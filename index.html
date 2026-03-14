@@ -130,7 +130,7 @@ textarea:focus { outline: none; border-color: var(--pink); background: #22222a; 
   border: 1px solid var(--purple);
   border-radius: 24px;
 }
-#resultArea.visible { display: block; animation: fadeIn 0.8s ease; }
+#resultArea.visible { display: block; animation: fadeIn 0.8s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
 #bioText { font-size: 1.1rem; line-height: 1.7; white-space: pre-wrap; color: var(--text); margin-bottom: 2rem; outline: none; }
@@ -162,7 +162,7 @@ textarea:focus { outline: none; border-color: var(--pink); background: #22222a; 
 
   <div class="intro-card">
     <h2>Stop swiping, start being seen.</h2>
-    <p>Answer at least 5 questions. The more specific your sensory details and "roast" stories, the better your profile will be.</p>
+    <p>Answer at least 5 questions. Be specific about your sensory details and personal stories—it helps the AI capture your true voice.</p>
   </div>
 
   <div class="progress-container">
@@ -262,7 +262,6 @@ textarea:focus { outline: none; border-color: var(--pink); background: #22222a; 
 
 <script>
 // --- CONFIGURATION ---
-// IMPORTANT: Paste your Apps Script Web App URL here after deploying the Code.gs
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
 
 const answered = new Set();
@@ -312,14 +311,22 @@ async function generateBio() {
       body: JSON.stringify({ answers })
     });
 
+    if (!response.ok) throw new Error("Failed to connect to the server.");
+
     const result = await response.json();
-    if (result.error) throw new Error(result.error);
+    
+    // Check if the script returned an error status
+    if (result.status === "error" || result.error) {
+        throw new Error(result.error || "The AI encountered an error.");
+    }
 
     document.getElementById('bioText').textContent = result.bio;
     document.getElementById('resultArea').classList.add('visible');
     document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    
   } catch (err) {
-    alert("Error: " + err.message);
+    console.error(err);
+    alert("Ghostwriter Error: " + err.message);
   } finally {
     document.getElementById('loader').classList.remove('visible');
   }
