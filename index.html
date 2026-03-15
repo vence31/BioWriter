@@ -3,127 +3,205 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ghostwriter AI</title>
+<title>Ghostwriter AI — Dating Bio Generator</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500&display=swap');
   :root { --pink: #e8889a; --purple: #c47ab8; --bg: #0d0d0f; --surface: #16161a; --border: #2a2a30; --text: #f0ede8; }
-  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 20px; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 20px 20px 60px; }
   .app { max-width: 650px; margin: 0 auto; }
-  .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-align: center; margin-bottom: 2rem; background: linear-gradient(to right, #f5c6a0, var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 15px; }
-  h3 { font-size: 0.9rem; margin-bottom: 6px; color: #f5c6a0; text-transform: uppercase; letter-spacing: 1px; }
-  p.hint { font-size: 0.82rem; color: #888; margin-bottom: 10px; line-height: 1.5; }
-  textarea { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 12px; font-family: inherit; resize: none; box-sizing: border-box; min-height: 80px; font-size: 0.95rem; }
-  .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; font-size: 1rem; margin-top: 10px; }
-  .btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
+  /* Header */
+  .logo { font-family: 'Playfair Display', serif; font-size: 2.5rem; text-align: center; margin-bottom: 6px; background: linear-gradient(to right, #f5c6a0, var(--pink)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .tagline { text-align: center; font-size: 0.85rem; color: #666; margin-bottom: 2rem; letter-spacing: 0.05em; }
+
+  /* Progress bar */
+  .progress-wrap { margin-bottom: 2rem; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: #666; margin-bottom: 6px; }
+  .progress-label span:last-child { color: var(--pink); font-weight: 500; }
+  .progress-track { height: 6px; background: #1a1a22; border-radius: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 10px; background: linear-gradient(to right, #f5c6a0, var(--pink), var(--purple)); width: 0%; transition: width 0.35s ease; }
+
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 20px; margin-bottom: 14px; transition: border-color 0.2s; }
+  .card.answered { border-color: rgba(196,122,184,0.4); }
+  .q-label { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .q-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(232,136,154,0.12); border: 1px solid rgba(232,136,154,0.25); font-size: 0.68rem; color: var(--pink); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: 600; }
+  .card.answered .q-num { background: rgba(196,122,184,0.2); border-color: var(--purple); color: var(--purple); }
+  h3 { font-size: 0.88rem; color: #f5c6a0; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  p.hint { font-size: 0.82rem; color: #666; margin: 6px 0 10px; line-height: 1.55; }
+  textarea { width: 100%; background: #0a0a0e; border: 1px solid var(--border); border-radius: 10px; color: #fff; padding: 12px; font-family: inherit; resize: none; box-sizing: border-box; min-height: 80px; font-size: 0.92rem; line-height: 1.5; outline: none; transition: border-color 0.2s; }
+  textarea:focus { border-color: var(--pink); }
+  textarea::placeholder { color: #2a2a38; }
+
+  /* Button */
+  .btn-wrap { position: sticky; bottom: 20px; z-index: 10; margin-top: 10px; }
+  .btn { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; font-size: 1rem; transition: opacity 0.2s, transform 0.1s; box-shadow: 0 4px 24px rgba(196,122,184,0.3); }
+  .btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+  .btn:disabled { opacity: 0.2; cursor: not-allowed; box-shadow: none; transform: none; }
+
+  /* Result */
   #resultArea { display: none; margin-top: 30px; padding: 25px; border: 1px solid var(--purple); border-radius: 15px; background: #111; }
-  .loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92); z-index: 100; flex-direction: column; align-items: center; justify-content: center; font-size: 1.1rem; color: var(--pink); letter-spacing: 0.05em; }
+  #resultArea h4 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 14px; }
+  #bioText { white-space: pre-wrap; line-height: 1.8; color: #fff; font-size: 1.05rem; outline: none; }
+  #bioText:focus { outline: 1px dashed rgba(196,122,184,0.3); border-radius: 6px; }
+  .result-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-copy { flex: 1; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: linear-gradient(to right, var(--pink), var(--purple)); color: white; font-size: 0.95rem; }
+  .btn-redo { padding: 14px 20px; border-radius: 10px; border: 1px solid var(--border); background: transparent; color: #888; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+  .btn-redo:hover { border-color: var(--pink); color: var(--pink); }
+
+  /* Loader */
+  .loader { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.94); z-index: 100; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+  .loader-ring { width: 48px; height: 48px; border: 3px solid #1a1a22; border-top-color: var(--pink); border-radius: 50%; animation: spin 0.9s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loader-text { color: var(--pink); font-size: 1rem; letter-spacing: 0.05em; }
+  .loader-sub { color: #444; font-size: 0.8rem; }
 </style>
 </head>
 <body>
 
 <div class="app">
   <div class="logo">Ghostwriter</div>
+  <div class="tagline">Answer 10 questions. Get a bio that actually sounds like you.</div>
+
+  <!-- Progress bar -->
+  <div class="progress-wrap">
+    <div class="progress-label">
+      <span>Profile Creation</span>
+      <span id="progressText">0 of 10 answered</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+  </div>
 
   <div id="questions">
 
-    <div class="card">
-      <h3>1. The Essence</h3>
-      <p class="hint">If you had to describe your vibe in just three words, what would they be? Not what you aspire to be — what your people would actually say.</p>
-      <textarea id="a-1" oninput="up()" placeholder="e.g. Curious, grounded, chaotic-good"></textarea>
+    <div class="card" id="c1">
+      <div class="q-label"><div class="q-num">1</div><h3>Your Personality in 3 Words</h3></div>
+      <p class="hint">If a close friend introduced you to someone new, what 3 words would they use to describe you?<br>Think real personality traits — not what sounds impressive.</p>
+      <textarea id="a-1" oninput="up(1)" placeholder="e.g. Curious, laid-back, sarcastic"></textarea>
     </div>
 
-    <div class="card">
-      <h3>2. The Geek-Out</h3>
-      <p class="hint">What are three niche topics or hobbies you could talk about for hours? The more specific the better — not "music," try "90s Memphis rap."</p>
-      <textarea id="a-2" oninput="up()" placeholder="e.g. Sourdough fermentation science, vintage NBA footage, brutalist architecture"></textarea>
+    <div class="card" id="c2">
+      <div class="q-label"><div class="q-num">2</div><h3>Things You Can Talk About Forever</h3></div>
+      <p class="hint">What are 2–3 topics you could talk about for hours?<br>The more specific the better — instead of "music," try something like "90s Memphis rap."</p>
+      <textarea id="a-2" oninput="up(2)" placeholder="e.g. Coffee brewing, NBA history, space documentaries"></textarea>
     </div>
 
-    <div class="card">
-      <h3>3. The Micro-Story</h3>
-      <p class="hint">Describe a perfect moment or your "happy place" using sensory details. What does it smell like? Sound like? Feel like?</p>
-      <textarea id="a-3" oninput="up()" placeholder="e.g. Sunday mornings in my kitchen — cast iron on the stove, Coltrane low on the speaker, nowhere to be until noon."></textarea>
+    <div class="card" id="c3">
+      <div class="q-label"><div class="q-num">3</div><h3>Your Perfect Moment</h3></div>
+      <p class="hint">Describe a moment that feels like a perfect day to you.<br>Where are you? What are you doing? Who are you with?</p>
+      <textarea id="a-3" oninput="up(3)" placeholder="e.g. Sunday morning coffee, music playing, cooking breakfast with nowhere to be."></textarea>
     </div>
 
-    <div class="card">
-      <h3>4. The Typical Sunday</h3>
-      <p class="hint">If money and work were irrelevant, how would you spend a random Sunday from morning to night? Be honest, not aspirational.</p>
-      <textarea id="a-4" oninput="up()" placeholder="e.g. Slow start, long breakfast I actually cooked, a drive with no destination, dinner with people I love."></textarea>
+    <div class="card" id="c4">
+      <div class="q-label"><div class="q-num">4</div><h3>Your Ideal Sunday</h3></div>
+      <p class="hint">If you had a completely free Sunday, how would you spend it from morning to night?<br>Be honest — not what sounds impressive.</p>
+      <textarea id="a-4" oninput="up(4)" placeholder="e.g. Slow start, long breakfast I cooked, a drive with no destination, dinner with people I love."></textarea>
     </div>
 
-    <div class="card">
-      <h3>5. The Roast Story</h3>
-      <p class="hint">What's a specific, funny story your friends tell to roast you? The one that comes up at every dinner. Self-awareness is attractive.</p>
-      <textarea id="a-5" oninput="up()" placeholder="e.g. I once drove 45 minutes to a restaurant, looked at the menu, and left. My friends have not let it go."></textarea>
+    <div class="card" id="c5">
+      <div class="q-label"><div class="q-num">5</div><h3>A Funny Story About You</h3></div>
+      <p class="hint">What's a funny story your friends always bring up about you?<br>Something slightly embarrassing usually works best.</p>
+      <textarea id="a-5" oninput="up(5)" placeholder="e.g. I once drove 45 minutes to a restaurant, looked at the menu, and left. They haven't let it go."></textarea>
     </div>
 
-    <div class="card">
-      <h3>6. The Younger Self</h3>
-      <p class="hint">What would your younger self be most surprised — or proud — to see in your life today? Even small things reveal a lot.</p>
-      <textarea id="a-6" oninput="up()" placeholder="e.g. That I actually learned to cook. That I stopped saying yes to everything."></textarea>
+    <div class="card" id="c6">
+      <div class="q-label"><div class="q-num">6</div><h3>Something Your Younger Self Would Be Proud Of</h3></div>
+      <p class="hint">What would the younger version of you be surprised or proud to see in your life today?</p>
+      <textarea id="a-6" oninput="up(6)" placeholder="e.g. That I actually learned to cook. That I stopped saying yes to everything."></textarea>
     </div>
 
-    <div class="card">
-      <h3>7. The Value Proposition</h3>
-      <p class="hint">What's the specific "win" someone gets by dating you? Not personality traits — concrete things. "I always find the best restaurant nobody's heard of yet."</p>
-      <textarea id="a-7" oninput="up()" placeholder="e.g. You'll never have a bad meal — I research restaurants like it's a second job."></textarea>
+    <div class="card" id="c7">
+      <div class="q-label"><div class="q-num">7</div><h3>What Makes Dating You Great?</h3></div>
+      <p class="hint">What's something someone would genuinely enjoy about dating you?<br>Think of real things you do — not just personality traits.</p>
+      <textarea id="a-7" oninput="up(7)" placeholder="e.g. I always find the best food spots and plan great weekend trips."></textarea>
     </div>
 
-    <div class="card">
-      <h3>8. The Vision</h3>
-      <p class="hint">What is your honest vision for a relationship in the next 3-5 years? Clarity is a green flag. Be direct.</p>
-      <textarea id="a-8" oninput="up()" placeholder="e.g. I want to build something real — someone I'm genuinely excited to come home to. Marriage is on the table."></textarea>
+    <div class="card" id="c8">
+      <div class="q-label"><div class="q-num">8</div><h3>What Kind of Relationship Do You Want?</h3></div>
+      <p class="hint">What do you honestly want from a relationship in the next few years?<br>Be clear and direct — clarity is a green flag.</p>
+      <textarea id="a-8" oninput="up(8)" placeholder="e.g. I want to build something real — someone I'm genuinely excited to come home to. Marriage is on the table."></textarea>
     </div>
 
-    <div class="card">
-      <h3>9. The Ideal Partner</h3>
-      <p class="hint">Describe three qualities in a partner that matter more to you than height, job, or any other "stat." Go deeper than "kind" or "funny."</p>
-      <textarea id="a-9" oninput="up()" placeholder="e.g. Genuinely curious about people. Knows how to disagree without a fight. Has one thing they care about deeply."></textarea>
+    <div class="card" id="c9">
+      <div class="q-label"><div class="q-num">9</div><h3>Qualities You Value in a Partner</h3></div>
+      <p class="hint">What are 3 qualities you value in a partner that matter more than looks or status?</p>
+      <textarea id="a-9" oninput="up(9)" placeholder="e.g. Genuinely curious about people. Knows how to disagree without a fight. Has one thing they care about deeply."></textarea>
     </div>
 
-    <div class="card">
-      <h3>10. The Deal-Breaker</h3>
-      <p class="hint">What's your one non-negotiable — framed as a hope, not a warning. "I need someone who wants a real family someday" lands better than "don't message me if you're not serious."</p>
-      <textarea id="a-10" oninput="up()" placeholder="e.g. I'm looking for someone who wants to be chosen every day — not just at the beginning."></textarea>
+    <div class="card" id="c10">
+      <div class="q-label"><div class="q-num">10</div><h3>Your Non-Negotiable</h3></div>
+      <p class="hint">What is one thing you need in a relationship to be happy?<br>Frame it positively instead of as a warning.</p>
+      <textarea id="a-10" oninput="up(10)" placeholder="e.g. I'm looking for someone who wants to be chosen every day — not just at the beginning."></textarea>
     </div>
 
   </div>
 
-  <button id="btn" class="btn" onclick="gen()" disabled>Answer 5 to start</button>
+  <div class="btn-wrap">
+    <button id="btn" class="btn" onclick="gen()" disabled>Answer 5 Questions to Unlock Your Bio</button>
+  </div>
 
   <div id="resultArea">
-    <div id="bioText" contenteditable="true" style="white-space: pre-wrap; line-height: 1.8; color: #fff; font-size: 1.1rem;"></div>
-    <button class="btn" onclick="copyBio()" style="margin-top:20px;">Copy Bio</button>
+    <h4>✦ Your Dating Bio</h4>
+    <div id="bioText" contenteditable="true"></div>
+    <div class="result-actions">
+      <button class="btn-copy" onclick="copyBio()">Copy Bio</button>
+      <button class="btn-redo" onclick="gen()">Regenerate ↺</button>
+    </div>
   </div>
 </div>
 
-<div id="loader" class="loader">Architecting your narrative...</div>
+<div id="loader" class="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Architecting your narrative...</div>
+  <div class="loader-sub">This takes about 10 seconds</div>
+</div>
 
 <script>
-// No API keys in this file. Gemini key lives securely in Apps Script only.
+// No API keys here — everything lives in Apps Script
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxSS7fX6bdPUUUFNBipt1AIddqnqPjqmIp7lYjDRTD7UBMimSuMCCmd9W_vWnVlulJH/exec';
 
 const LABELS = [
-  "Their essence / vibe in 3 words",
-  "Niche topics or hobbies they geek out on",
+  "Their personality in 3 words (friends' description)",
+  "Topics they can talk about for hours (niche/specific)",
   "A perfect moment or happy place (sensory details)",
-  "How they spend a standard Sunday (money/work irrelevant)",
-  "A funny story friends use to roast them",
-  "What their younger self would be most surprised or proud to see",
-  "The specific win a partner gets by dating them",
-  "Their relationship vision for the next 3-5 years",
-  "Three qualities they value in a partner more than stats",
-  "Their one non-negotiable deal-breaker, framed as a hope"
+  "How they spend an ideal free Sunday",
+  "A funny story friends always tell about them",
+  "What their younger self would be proud to see today",
+  "The specific win someone gets from dating them",
+  "Their honest relationship vision for the next few years",
+  "Three qualities they value in a partner more than looks or status",
+  "Their one non-negotiable, framed as a positive hope"
 ];
 
-function up() {
-  let count = 0;
-  for (let i = 1; i <= 10; i++) {
-    if (document.getElementById('a-' + i).value.trim().length > 3) count++;
-  }
+let answeredCount = 0;
+
+function up(num) {
+  const val = document.getElementById('a-' + num).value.trim();
+  const card = document.getElementById('c' + num);
+  const wasAnswered = card.classList.contains('answered');
+  const isAnswered = val.length > 3;
+
+  if (isAnswered && !wasAnswered) { card.classList.add('answered'); answeredCount++; }
+  if (!isAnswered && wasAnswered) { card.classList.remove('answered'); answeredCount--; }
+
   const btn = document.getElementById('btn');
-  btn.disabled = count < 5;
-  btn.textContent = count >= 5 ? 'Generate Bio' : 'Answer ' + (5 - count) + ' more...';
+  const pct = (answeredCount / 10 * 100).toFixed(0);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = answeredCount + ' of 10 answered';
+
+  if (answeredCount >= 10) {
+    btn.disabled = false;
+    btn.textContent = 'Generate My Bio ✦';
+  } else if (answeredCount >= 5) {
+    btn.disabled = false;
+    btn.textContent = 'Generate My Bio (' + answeredCount + '/10) ✦';
+  } else {
+    btn.disabled = true;
+    btn.textContent = 'Answer ' + (5 - answeredCount) + ' More Questions to Unlock Your Bio';
+  }
 }
 
 function collectAnswers() {
@@ -138,21 +216,20 @@ function collectAnswers() {
 async function gen() {
   const answers = collectAnswers();
   document.getElementById('loader').style.display = 'flex';
+  document.getElementById('resultArea').style.display = 'none';
 
   try {
     const response = await fetch(SCRIPT_URL, {
       method: 'POST',
       body: JSON.stringify({ answers })
     });
-
     const data = await response.json();
-
     if (data.status === 'success') {
       document.getElementById('bioText').textContent = data.bio;
       document.getElementById('resultArea').style.display = 'block';
       document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
     } else {
-      throw new Error(data.message || 'Something went wrong in Apps Script');
+      throw new Error(data.message || 'Something went wrong');
     }
   } catch (err) {
     alert('Error: ' + err.message);
@@ -164,15 +241,9 @@ async function gen() {
 function copyBio() {
   const text = document.getElementById('bioText').textContent;
   navigator.clipboard.writeText(text).then(() => {
-    alert('Copied to clipboard!');
-  }).catch(() => {
-    const el = document.getElementById('bioText');
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-    document.execCommand('copy');
-    alert('Copied!');
+    const btn = document.querySelector('.btn-copy');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy Bio', 2000);
   });
 }
 </script>
